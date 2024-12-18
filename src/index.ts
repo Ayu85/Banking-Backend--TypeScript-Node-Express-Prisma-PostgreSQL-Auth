@@ -8,6 +8,8 @@ import authrouter from "./routes/authRoutes";
 import { PrismaClient } from "@prisma/client";
 import { generateAC } from "./utils/generateAccount";
 import accountRoutes from "./routes/accountRoutes";
+import router from "./routes/authRoutes";
+import transactionRoutes from "./routes/transactionRoutes";
 const logFilePath = path.join(__dirname, "logs", "app.log");
 export const client = new PrismaClient();
 dotenv.config();
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 });
 app.use("/api/v1/auth", authrouter);
 app.use("/api/v1/acc", accountRoutes);
+app.use("/api/v1/transaction", transactionRoutes);
 app.listen(process.env.PORT, () => {
   console.log("App running on port ", process.env.PORT);
 });

@@ -15,7 +15,6 @@ accountRoutes.post(
   }
 );
 
-// Explicitly typed route handler
 accountRoutes.get(
   "/getaccounts",
   (req: Request, res: Response, next: NextFunction) => {

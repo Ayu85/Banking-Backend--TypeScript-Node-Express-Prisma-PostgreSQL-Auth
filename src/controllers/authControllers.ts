@@ -96,7 +96,7 @@ export const logout = async (
     return res.cookie("token", "").status(200).json("Logged out successfully");
   } catch (error) {
     return res
-      .status(200)
+      .status(500)
       .json({ msg: "Internal Server Error", success: false });
   }
 };

@@ -111,7 +111,7 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         return res
-            .status(200)
+            .status(500)
             .json({ msg: "Internal Server Error", success: false });
     }
 });

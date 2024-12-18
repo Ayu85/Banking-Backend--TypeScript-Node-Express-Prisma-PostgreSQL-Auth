@@ -10,7 +10,6 @@ accountRoutes.post("/create", (req, res, next) => {
 }, (req, res, next) => {
     (0, accountControllers_1.createAccount)(req, res);
 });
-// Explicitly typed route handler
 accountRoutes.get("/getaccounts", (req, res, next) => {
     (0, isAuth_1.isAuth)(req, res, next);
 }, (req, res, next) => {

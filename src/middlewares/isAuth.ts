@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
+import { client } from "..";
 
-export const isAuth = (
+export const isAuth = async(
   req: Request, 
   res: Response, 
   next: NextFunction
@@ -23,7 +24,6 @@ export const isAuth = (
       if (err) {
         return res.status(401).json({ msg: "Invalid or Expired Token", success: false });
       }
-      
       // Attach the decoded user information to the request object
       req.user = decoded;  // Store decoded data (like userId) in req.user
       next();  // Proceed to the next middleware/handler
