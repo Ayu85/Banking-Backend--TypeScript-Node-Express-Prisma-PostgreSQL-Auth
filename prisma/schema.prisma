@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  custid   Int       @id @default(autoincrement())
+  fullname String
+  contact  String
+  email    String
+  password String
+  accounts Account[] // One-to-many relation: a customer can have multiple accounts
+  loans    Loan[]
+  cards    Card[]
+}
+
+model Account {
+  acnumber         String        @id // Unique account identifier (e.g., account number)
+  type             String // Type of account (e.g., "Checking", "Savings")
+  balance          Int           @default(10000) // Balance of the account
+  opendate         DateTime      @default(now()) // Date the account was opened
+  ownerid          Int // Foreign key to the Customer model (who owns the account)
+  currency         String        @default("USD") // Currency for the account
+  transactionsFrom Transaction[] @relation("FromAccount") // Transactions where this account is the sender
+  transactionsTo   Transaction[] @relation("ToAccount") // Transactions where this account is the receiver
+  owner            Customer      @relation(fields: [ownerid], references: [custid]) // Relation to Customer model
+  cards            Card[]
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement()) // Unique ID for the transaction
+  amount        Float // Amount of the transaction (e.g., +100 for deposit, -50 for withdrawal)
+  date          DateTime @default(now()) // Timestamp of when the transaction took place
+  description   String? // Optional description (e.g., "Deposit", "Withdrawal", "Payment")
+  fromAccountId String // Foreign key to the Account from which money is sent
+  toAccountId   String // Foreign key to the Account to which money is received
+
+  fromAccount Account @relation("FromAccount", fields: [fromAccountId], references: [acnumber]) // Relation to the sending account
+  toAccount   Account @relation("ToAccount", fields: [toAccountId], references: [acnumber]) // Relation to the receiving account
+}
+
+model Loan {
+  id         Int      @id @default(autoincrement()) // Unique ID for the loan
+  amount     Float // Loan amount
+  interest   Float // Interest rate
+  term       Int // Loan term (e.g., number of months)
+  startDate  DateTime @default(now()) // Date when the loan was granted
+  dueDate    DateTime // Date when the loan is due to be paid off
+  status     String // Status of the loan (e.g., "ACTIVE", "PAID", "DEFAULTED")
+  customerId Int // Foreign key to the customer who took the loan
+  customer   Customer @relation(fields: [customerId], references: [custid]) // Relation to Customer
+}
+
+model Card {
+  id         Int      @id @default(autoincrement()) // Unique ID for the card
+  cardNumber String   @unique // Unique card number (PAN)
+  type       String // Type of card (e.g., "Debit", "Credit")
+  expiration DateTime // Expiration date of the card
+  cvv        String // Card security code (CVV)
+  ownerid    Int // Foreign key to Customer
+  accountId  String // Foreign key to the Account linked to this card
+  owner      Customer @relation(fields: [ownerid], references: [custid]) // Customer owner of the card
+  account    Account  @relation(fields: [accountId], references: [acnumber]) // Account linked to the card
+}
+
+model BankBranch {
+  id          Int      @id @default(autoincrement()) // Unique branch ID
+  name        String // Name of the branch (e.g., "Downtown Branch")
+  address     String // Physical address of the branch
+  phoneNumber String // Phone number for the branch
+  managerId   Int // Foreign key to the bank manager
+  manager     Employee @relation(fields: [managerId], references: [id]) // Relation to an Employee (the branch manager)
+}
+
+model Employee {
+  id         Int          @id @default(autoincrement()) // Unique ID for the employee
+  firstName  String // Employee's first name
+  lastName   String // Employee's last name
+  position   String // Job position (e.g., "Manager", "Teller")
+  email      String       @unique // Employee's email (unique)
+  branchId   Int // Foreign key to the branch where the employee works
+  // branch    BankBranch @relation(fields: [branchId], references: [id]) // Relation to the branch
+  BankBranch BankBranch[]
+}
