@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { isAuth } from "../middlewares/isAuth";
-import { sendMoney } from "../controllers/transactionController";
+import {
+  fetchTransactions,
+  sendMoney,
+} from "../controllers/transactionController";
 
 const router = Router();
 router.post(
@@ -12,4 +15,13 @@ router.post(
     sendMoney(req, res);
   }
 );
-export default router 
+router.get(
+  "/fetch-transactions",
+  (req: Request, res: Response, next: NextFunction) => {
+    isAuth(req, res, next);
+  },
+  (req: Request, res: Response) => {
+    fetchTransactions(req, res);
+  }
+);
+export default router;
