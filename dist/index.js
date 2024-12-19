@@ -13,6 +13,7 @@ const cors_1 = __importDefault(require("cors"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const client_1 = require("@prisma/client");
 const accountRoutes_1 = __importDefault(require("./routes/accountRoutes"));
+const cardRoutes_1 = __importDefault(require("./routes/cardRoutes"));
 const transactionRoutes_1 = __importDefault(require("./routes/transactionRoutes"));
 const logFilePath = path_1.default.join(__dirname, "logs", "app.log");
 exports.client = new client_1.PrismaClient();
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 app.use("/api/v1/auth", authRoutes_1.default);
 app.use("/api/v1/acc", accountRoutes_1.default);
 app.use("/api/v1/transaction", transactionRoutes_1.default);
+app.use("/api/v1/card", cardRoutes_1.default);
 app.listen(process.env.PORT, () => {
     console.log("App running on port ", process.env.PORT);
 });

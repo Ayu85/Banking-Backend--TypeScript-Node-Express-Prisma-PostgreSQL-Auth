@@ -16,7 +16,7 @@ const sendMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { amount, description, toAccountId, fromAccountId } = req.body;
         const to = (0, lodash_1.toInteger)(toAccountId);
-        const fromAccountInt = (0, lodash_1.toInteger)(req.user.userId);
+        const fromAccountInt = (0, lodash_1.toInteger)(req.user.userID);
         const fromAccountIdStr = (0, lodash_1.toString)(req.user.userId);
         if (!amount || !toAccountId)
             return res.status(400).json({ msg: "Missing fields", success: false });

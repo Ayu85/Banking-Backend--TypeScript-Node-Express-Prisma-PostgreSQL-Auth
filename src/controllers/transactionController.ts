@@ -6,7 +6,7 @@ export const sendMoney = async (req: Request, res: Response) => {
   try {
     const { amount, description, toAccountId, fromAccountId } = req.body;
     const to = toInteger(toAccountId);
-    const fromAccountInt = toInteger((req.user as any).userId);
+    const fromAccountInt = toInteger((req.user as any).userID);
     const fromAccountIdStr = toString((req.user as any).userId);
     if (!amount || !toAccountId)
       return res.status(400).json({ msg: "Missing fields", success: false });
