@@ -51,8 +51,8 @@ export const sendMoney = async (req: Request, res: Response) => {
         data: {
           amount,
           description,
-          fromAccountId: fromAccountNo,
-          toAccountId: toAccountNo
+          fromAccountNo: fromAccountNo,
+          toAccountNo: toAccountNo
         },
       });
       return res.status(200).json({
@@ -81,7 +81,7 @@ export const fetchTransactions = async (req: Request, res: Response) => {
 
     // Fetch transactions and include the owner's name of the receiving account (toAccountId)
     const transactions = await client.transaction.findMany({
-      where: { fromAccountId: fromAccountNo },
+      where: { fromAccountNo: fromAccountNo },
       include: {
         toAccount: {
           select: {
