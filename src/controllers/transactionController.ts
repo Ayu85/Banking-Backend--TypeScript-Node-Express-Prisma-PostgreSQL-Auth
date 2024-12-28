@@ -10,7 +10,7 @@ export const sendMoney = async (req: Request, res: Response) => {
     const checkOwner = await client.account.findFirst({
       where: { acnumber: fromAccountNo }
     })
-    
+
     if (checkOwner?.ownerid !== fromAccountInt)
       return res.status(400).json({ msg: "Invalid Details", success: false });
 
@@ -80,16 +80,18 @@ export const sendMoney = async (req: Request, res: Response) => {
 export const fetchTransactions = async (req: Request, res: Response) => {
   try {
     const { fromAccountNo } = req.body;
+    if (!fromAccountNo)
+      return res.status(400).json({ msg: "Missing fields", success: false })
     const userID = toInteger((req.user as any).userId);
     const checkOwner = await client.account.findFirst({
       where: { ownerid: userID },
     });
     if (checkOwner?.acnumber !== fromAccountNo)
-      return res.status(400).json({ msg: "Unable to fetch", success: false });
+      return res.status(400).json({ msg: "Invalid details,unable to fetch", success: false });
 
     // Fetch transactions and include the owner's name of the receiving account (toAccountId)
     const transactions = await client.transaction.findMany({
-      where: { fromAccountNo: fromAccountNo },
+      where: { fromAccountNo },
       include: {
         toAccount: {
           select: {

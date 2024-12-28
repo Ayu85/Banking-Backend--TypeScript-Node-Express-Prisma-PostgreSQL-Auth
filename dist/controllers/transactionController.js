@@ -17,11 +17,9 @@ const sendMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { amount, description, toAccountNo, fromAccountNo } = req.body;
         // const to = toInteger(toAccountId);
         const fromAccountInt = (0, lodash_1.toInteger)(req.user.userId);
-        console.log(fromAccountInt);
         const checkOwner = yield __1.client.account.findFirst({
             where: { acnumber: fromAccountNo }
         });
-        console.log(checkOwner);
         if ((checkOwner === null || checkOwner === void 0 ? void 0 : checkOwner.ownerid) !== fromAccountInt)
             return res.status(400).json({ msg: "Invalid Details", success: false });
         // const fromAccountIdStr = toString((req.user as any).userId);
@@ -85,15 +83,17 @@ exports.sendMoney = sendMoney;
 const fetchTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fromAccountNo } = req.body;
+        if (!fromAccountNo)
+            return res.status(400).json({ msg: "Missing fields", success: false });
         const userID = (0, lodash_1.toInteger)(req.user.userId);
         const checkOwner = yield __1.client.account.findFirst({
             where: { ownerid: userID },
         });
         if ((checkOwner === null || checkOwner === void 0 ? void 0 : checkOwner.acnumber) !== fromAccountNo)
-            return res.status(400).json({ msg: "Unable to fetch", success: false });
+            return res.status(400).json({ msg: "Invalid details,unable to fetch", success: false });
         // Fetch transactions and include the owner's name of the receiving account (toAccountId)
         const transactions = yield __1.client.transaction.findMany({
-            where: { fromAccountNo: fromAccountNo },
+            where: { fromAccountNo },
             include: {
                 toAccount: {
                     select: {
