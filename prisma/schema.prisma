@@ -35,7 +35,7 @@ model Transaction {
   id            Int      @id @default(autoincrement()) // Unique ID for the transaction
   amount        Float // Amount of the transaction (e.g., +100 for deposit, -50 for withdrawal)
   date          DateTime @default(now()) // Timestamp of when the transaction took place
-  description   String? // Optional description (e.g., "Deposit", "Withdrawal", "Payment")
+  description   String   @default("Transaction done") // Optional description (e.g., "Deposit", "Withdrawal", "Payment")
   fromAccountNo String // Foreign key to the Account from which money is sent
   toAccountNo   String // Foreign key to the Account to which money is received
 
