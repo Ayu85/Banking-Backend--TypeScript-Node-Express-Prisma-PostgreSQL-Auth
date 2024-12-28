@@ -24,7 +24,7 @@ model Account {
   balance          Int           @default(10000) // Balance of the account
   opendate         DateTime      @default(now()) // Date the account was opened
   ownerid          Int // Foreign key to the Customer model (who owns the account)
-  currency         String        @default("USD") // Currency for the account
+  currency         String        @default("IND") // Currency for the account
   transactionsFrom Transaction[] @relation("FromAccount") // Transactions where this account is the sender
   transactionsTo   Transaction[] @relation("ToAccount") // Transactions where this account is the receiver
   owner            Customer      @relation(fields: [ownerid], references: [custid]) // Relation to Customer model
