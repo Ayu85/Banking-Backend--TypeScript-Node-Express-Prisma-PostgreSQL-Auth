@@ -6,7 +6,14 @@ export const sendMoney = async (req: Request, res: Response) => {
   try {
     const { amount, description, toAccountNo, fromAccountNo } = req.body;
     // const to = toInteger(toAccountId);
-    // const fromAccountInt = toInteger((req.user as any).userID);
+    const fromAccountInt = toInteger((req.user as any).userId);
+    const checkOwner = await client.account.findFirst({
+      where: { acnumber: fromAccountNo }
+    })
+    
+    if (checkOwner?.ownerid !== fromAccountInt)
+      return res.status(400).json({ msg: "Invalid Details", success: false });
+
     // const fromAccountIdStr = toString((req.user as any).userId);
     if (!amount || !toAccountNo)
       return res.status(400).json({ msg: "Missing fields", success: false });
@@ -15,6 +22,7 @@ export const sendMoney = async (req: Request, res: Response) => {
     if (amount <= 0) {
       return res.status(400).json({ msg: "Invalid amount", success: false });
     }
+
     // Check if both accounts exist
     const fromAccount = await client.account.findFirst({
       where: { acnumber: fromAccountNo },

@@ -16,7 +16,14 @@ const sendMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { amount, description, toAccountNo, fromAccountNo } = req.body;
         // const to = toInteger(toAccountId);
-        // const fromAccountInt = toInteger((req.user as any).userID);
+        const fromAccountInt = (0, lodash_1.toInteger)(req.user.userId);
+        console.log(fromAccountInt);
+        const checkOwner = yield __1.client.account.findFirst({
+            where: { acnumber: fromAccountNo }
+        });
+        console.log(checkOwner);
+        if ((checkOwner === null || checkOwner === void 0 ? void 0 : checkOwner.ownerid) !== fromAccountInt)
+            return res.status(400).json({ msg: "Invalid Details", success: false });
         // const fromAccountIdStr = toString((req.user as any).userId);
         if (!amount || !toAccountNo)
             return res.status(400).json({ msg: "Missing fields", success: false });
@@ -56,8 +63,8 @@ const sendMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 data: {
                     amount,
                     description,
-                    fromAccountId: fromAccountNo,
-                    toAccountId: toAccountNo
+                    fromAccountNo: fromAccountNo,
+                    toAccountNo: toAccountNo
                 },
             });
             return res.status(200).json({
@@ -86,7 +93,7 @@ const fetchTransactions = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return res.status(400).json({ msg: "Unable to fetch", success: false });
         // Fetch transactions and include the owner's name of the receiving account (toAccountId)
         const transactions = yield __1.client.transaction.findMany({
-            where: { fromAccountId: fromAccountNo },
+            where: { fromAccountNo: fromAccountNo },
             include: {
                 toAccount: {
                     select: {
