@@ -4,11 +4,11 @@ import { client } from "..";
 
 export const sendMoney = async (req: Request, res: Response) => {
   try {
-    const { amount, description, toAccountId, fromAccountId } = req.body;
-    const to = toInteger(toAccountId);
-    const fromAccountInt = toInteger((req.user as any).userID);
-    const fromAccountIdStr = toString((req.user as any).userId);
-    if (!amount || !toAccountId)
+    const { amount, description, toAccountNo, fromAccountNo } = req.body;
+    // const to = toInteger(toAccountId);
+    // const fromAccountInt = toInteger((req.user as any).userID);
+    // const fromAccountIdStr = toString((req.user as any).userId);
+    if (!amount || !toAccountNo)
       return res.status(400).json({ msg: "Missing fields", success: false });
 
     // Validate if the 'amount' is positive
@@ -17,14 +17,14 @@ export const sendMoney = async (req: Request, res: Response) => {
     }
     // Check if both accounts exist
     const fromAccount = await client.account.findFirst({
-      where: { acnumber: fromAccountId },
+      where: { acnumber: fromAccountNo },
     });
     const toAccount = await client.account.findFirst({
-      where: { acnumber: toAccountId },
+      where: { acnumber: toAccountNo },
     });
     // console.log(toAccount);
 
-    if (!fromAccount || !toAccountId) {
+    if (!fromAccount || !toAccount) {
       return res.status(400).json("One or both accounts do not exist");
     }
 
@@ -36,13 +36,13 @@ export const sendMoney = async (req: Request, res: Response) => {
     const result = await client.$transaction(async (client) => {
       // Debit from the sender account
       await client.account.update({
-        where: { acnumber: fromAccountId },
+        where: { acnumber: fromAccountNo },
         data: { balance: fromAccount.balance - amount },
       });
 
       // Credit to the recipient account
       await client.account.update({
-        where: { acnumber: toAccountId },
+        where: { acnumber: toAccountNo },
         data: { balance: toAccount?.balance + amount },
       });
 
@@ -51,8 +51,8 @@ export const sendMoney = async (req: Request, res: Response) => {
         data: {
           amount,
           description,
-          fromAccountId: fromAccountId,
-          toAccountId: toAccountId,
+          fromAccountId: fromAccountNo,
+          toAccountId: toAccountNo
         },
       });
       return res.status(200).json({
@@ -71,17 +71,17 @@ export const sendMoney = async (req: Request, res: Response) => {
 };
 export const fetchTransactions = async (req: Request, res: Response) => {
   try {
-    const { fromAccountId } = req.body;
+    const { fromAccountNo } = req.body;
     const userID = toInteger((req.user as any).userId);
     const checkOwner = await client.account.findFirst({
       where: { ownerid: userID },
     });
-    if (checkOwner?.acnumber !== fromAccountId)
+    if (checkOwner?.acnumber !== fromAccountNo)
       return res.status(400).json({ msg: "Unable to fetch", success: false });
 
     // Fetch transactions and include the owner's name of the receiving account (toAccountId)
     const transactions = await client.transaction.findMany({
-      where: { fromAccountId: fromAccountId },
+      where: { fromAccountId: fromAccountNo },
       include: {
         toAccount: {
           select: {

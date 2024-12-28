@@ -36,11 +36,11 @@ model Transaction {
   amount        Float // Amount of the transaction (e.g., +100 for deposit, -50 for withdrawal)
   date          DateTime @default(now()) // Timestamp of when the transaction took place
   description   String? // Optional description (e.g., "Deposit", "Withdrawal", "Payment")
-  fromAccountId String // Foreign key to the Account from which money is sent
-  toAccountId   String // Foreign key to the Account to which money is received
+  fromAccountNo String // Foreign key to the Account from which money is sent
+  toAccountNo   String // Foreign key to the Account to which money is received
 
-  fromAccount Account @relation("FromAccount", fields: [fromAccountId], references: [acnumber]) // Relation to the sending account
-  toAccount   Account @relation("ToAccount", fields: [toAccountId], references: [acnumber]) // Relation to the receiving account
+  fromAccount Account @relation("FromAccount", fields: [fromAccountNo], references: [acnumber]) // Relation to the sending account
+  toAccount   Account @relation("ToAccount", fields: [toAccountNo], references: [acnumber]) // Relation to the receiving account
 }
 
 model Loan {
